@@ -1,10 +1,12 @@
-# Password Vault
+# Password Vault Concept
 
 A simple learning project for exploring account discovery and API integration.
 
 ## What's This?
 
 This is a proof of concept I built while learning about Flask and API integrations. It's basically a sandbox for experimenting with the Hunter API to discover accounts associated with email addresses.
+
+**Note:** This is NOT a production-ready application. It's a learning tool and coding exercise.
 
 ## Core Functionality
 
@@ -65,4 +67,4 @@ The architecture is designed to be modular so I can easily add new API integrati
 
 ## License
 
-MIT
+[MIT](./LICENSE)

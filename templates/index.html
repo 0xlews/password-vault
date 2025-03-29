@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Vault - Secure Password Management{% endblock %}
+
+{% block content %}
+<div class="row align-items-center py-5">
+    <div class="col-md-6">
+        <h1 class="display-4 fw-bold">Secure Your Digital Life</h1>
+        <p class="lead text-secondary mb-4">Discover and secure your online accounts with automated password protection.</p>
+        <p class="mb-4">Our service helps you find accounts connected to your email, monitor security issues, and automate password management to keep your online presence secure.</p>
+        <div class="mt-4">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Get Started</a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg ms-2">Login</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-6 text-center">
+        <div class="p-4">
+            <svg viewBox="0 0 200 200" width="100%" style="max-width: 300px;">
+                <circle cx="100" cy="100" r="80" fill="none" stroke="var(--accent-primary)" stroke-width="6" stroke-dasharray="502" stroke-dashoffset="502" stroke-linecap="round">
+                    <animate attributeName="stroke-dashoffset" from="502" to="0" dur="2s" fill="freeze" />
+                </circle>
+                <path d="M100 140c22.1 0 40-17.9 40-40s-17.9-40-40-40-40 17.9-40 40 17.9 40 40 40z" fill="none" stroke="var(--accent-primary)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="251" stroke-dashoffset="251">
+                    <animate attributeName="stroke-dashoffset" from="251" to="0" dur="1s" fill="freeze" begin="0.5s" />
+                </path>
+                <path d="M100 90v20" stroke="var(--accent-primary)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="20" stroke-dashoffset="20">
+                    <animate attributeName="stroke-dashoffset" from="20" to="0" dur="0.2s" fill="freeze" begin="1.5s" />
+                </path>
+                <circle cx="100" cy="80" r="3" fill="var(--accent-primary)" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.2s" fill="freeze" begin="1.7s" />
+                </circle>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<hr class="my-5">
+
+<div class="row mb-5">
+    <div class="col-12 text-center mb-4">
+        <h2>How It Works</h2>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="mb-3">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="11" cy="11" r="8" stroke="var(--accent-primary)" stroke-width="2"/>
+                        <path d="M21 21L16.65 16.65" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h4>Account Discovery</h4>
+                <p>Our system intelligently identifies online accounts associated with your email across the web.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="mb-3">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="var(--warning)" stroke-width="2"/>
+                        <path d="M12 8V12" stroke="var(--warning)" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M12 16H12.01" stroke="var(--warning)" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h4>Security Monitoring</h4>
+                <p>We continuously monitor your accounts for potential security issues and vulnerabilities.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="mb-3">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C13.6569 2 15.1569 2.41055 16.4462 3.10699" stroke="var(--success)" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M19.5 8.5L22 12L19.5 15.5" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 12H16" stroke="var(--success)" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h4>Password Reset</h4>
+                <p>Automatically initiate and manage password resets for your accounts whenever needed.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row my-5 py-5 bg-opacity-10 rounded-4" style="background-color: var(--background-secondary);">
+    <div class="col-12 text-center mb-4">
+        <h2>Key Benefits</h2>
+    </div>
+    <div class="col-md-3">
+        <div class="text-center mb-4 p-3">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-3">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="var(--success)" stroke-width="2"/>
+                <path d="M16 10L10.5 15.5L8 13" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h5>Save Time</h5>
+            <p>Automate password management across multiple accounts.</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="text-center mb-4 p-3">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-3">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="var(--success)" stroke-width="2"/>
+                <path d="M16 10L10.5 15.5L8 13" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h5>Enhanced Security</h5>
+            <p>Quickly respond to security concerns before they're exploited.</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="text-center mb-4 p-3">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-3">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="var(--success)" stroke-width="2"/>
+                <path d="M16 10L10.5 15.5L8 13" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h5>Account Discovery</h5>
+            <p>Find forgotten accounts that could pose security risks.</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="text-center mb-4 p-3">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-3">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="var(--success)" stroke-width="2"/>
+                <path d="M16 10L10.5 15.5L8 13" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h5>Peace of Mind</h5>
+            <p>Rest easy knowing your online presence is protected.</p>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-5">
+    <a href="{{ url_for('register') if not current_user.is_authenticated else url_for('dashboard') }}" class="btn btn-primary btn-lg px-5">
+        {{ "Get Started" if not current_user.is_authenticated else "Go to Dashboard" }}
+    </a>
+</div>
+{% endblock %}

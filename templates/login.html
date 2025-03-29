@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Vault{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-5 col-md-7">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-2">
+                        <path d="M19 11H5C3.89543 11 3 11.8954 3 13V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V13C21 11.8954 20.1046 11 19 11Z" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M7 11V7C7 5.93913 7.42143 4.92172 8.17157 4.17157C8.92172 3.42143 9.93913 3 11 3H13C14.0609 3 15.0783 3.42143 15.8284 4.17157C16.5786 4.92172 17 5.93913 17 7V11" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h3 class="mt-2">Welcome Back</h3>
+                    <p class="text-secondary">Sign in to access your vault</p>
+                </div>
+                
+                <form method="POST">
+                    <div class="mb-4">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control form-control-lg" id="email" name="email" required placeholder="you@example.com">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between">
+                            <label for="password" class="form-label">Password</label>
+                            <a href="#" class="small text-decoration-none">Forgot password?</a>
+                        </div>
+                        <input type="password" class="form-control form-control-lg" id="password" name="password" required placeholder="Enter your password">
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
+                    </div>
+                </form>
+                
+                <div class="mt-4 text-center">
+                    <p>Don't have an account? <a href="{{ url_for('register') }}" class="text-decoration-none">Create Account</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Vault{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="mb-0">Security Dashboard</h1>
+        <p class="text-muted">Monitor and manage your account security</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('discover_accounts') }}" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-1">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Discover Accounts
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Security Status Overview -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Security Status</h5>
+            </div>
+            <div class="card-body">
+                {% set total_accounts = accounts|length %}
+                {% set compromised = compromised_accounts|length %}
+                {% set secure_accounts = total_accounts - compromised %}
+                
+                <div class="text-center mb-4">
+                    <div class="security-status {% if compromised > 0 %}danger{% else %}secure{% endif %} p-3">
+                        <h3 class="mb-0 fw-bold">
+                            {% if compromised > 0 %}
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
+                                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="var(--danger)" stroke-width="2"/>
+                                    <path d="M12 8V12" stroke="var(--danger)" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M12 16H12.01" stroke="var(--danger)" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                                Action Required
+                            {% else %}
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
+                                    <path d="M20 7L9 18L4 13" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                All Secure
+                            {% endif %}
+                        </h3>
+                    </div>
+                </div>
+                
+                <h5>Account Overview</h5>
+                <div class="progress mb-3" style="height: 10px;">
+                    {% if total_accounts > 0 %}
+                        {% set secure_percent = (secure_accounts / total_accounts * 100)|int %}
+                        <div class="progress-bar bg-success" role="progressbar"
+                             style="width: {{ secure_percent }}%"
+                             aria-valuenow="{{ secure_percent }}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                        {% if compromised > 0 %}
+                            {% set compromised_percent = (compromised / total_accounts * 100)|int %}
+                            <div class="progress-bar bg-danger" role="progressbar"
+                                 style="width: {{ compromised_percent }}%"
+                                 aria-valuenow="{{ compromised_percent }}" aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="progress-bar" role="progressbar" style="width: 100%; background-color: var(--background-secondary);">
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-success">{{ secure_accounts }} Secure</span>
+                    {% if compromised > 0 %}
+                        <span class="text-danger">{{ compromised }} At Risk</span>
+                    {% endif %}
+                </div>
+                
+                <div class="text-center mt-4 pt-2 border-top">
+                    <p class="mb-0">Last scan: 
+                        {% if accounts and accounts[0].last_breach_check %}
+                            {{ accounts[0].last_breach_check.strftime('%Y-%m-%d %H:%M') }}
+                        {% else %}
+                            Never
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Tips</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-start mb-3">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2 flex-shrink-0">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="var(--accent-primary)" stroke-width="2"/>
+                        <path d="M12 16V12" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M12 8H12.01" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <p class="mb-0">Use unique passwords for each account to minimize risk</p>
+                </div>
+                <div class="d-flex align-items-start mb-3">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2 flex-shrink-0">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="var(--accent-primary)" stroke-width="2"/>
+                        <path d="M12 16V12" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M12 8H12.01" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <p class="mb-0">Enable two-factor authentication where available</p>
+                </div>
+                <div class="d-flex align-items-start">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2 flex-shrink-0">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="var(--accent-primary)" stroke-width="2"/>
+                        <path d="M12 16V12" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M12 8H12.01" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <p class="mb-0">Periodically reset passwords for sensitive accounts</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Accounts At Risk -->
+    <div class="col-lg-8">
+        {% if compromised_accounts %}
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Accounts At Risk</h5>
+                    <span class="badge bg-light text-danger">{{ compromised_accounts|length }}</span>
+                </div>
+                <div class="card-body">
+                    <p>These accounts have security concerns. We recommend resetting their passwords.</p>
+                    
+                    <div class="row">
+                        {% for account in compromised_accounts %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card account-card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2 text-danger">
+                                                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+                                                <path d="M12 8V12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                                <path d="M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                            </svg>
+                                            <h5 class="mb-0">{{ account.service_name }}</h5>
+                                        </div>
+                                        <p class="text-muted mb-1">{{ account.email }}</p>
+                                        {% if account.username %}
+                                            <p class="text-muted mb-3">Username: {{ account.username }}</p>
+                                        {% endif %}
+                                        
+                                        <div class="mt-3">
+                                            <a href="{{ url_for('reset_password', account_id=account.id) }}" class="btn btn-danger btn-sm">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-1">
+                                                    <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.8273 3 17.35 4.30093 19 6.34267" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                                    <path d="M22 5L16 3L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                                Reset Password
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        
+        <!-- All Accounts -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">All Accounts</h5>
+                <span class="badge" style="background-color: var(--accent-primary);">{{ accounts|length }}</span>
+            </div>
+            <div class="card-body">
+                {% if accounts %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Email/Username</th>
+                                    <th>Status</th>
+                                    <th>Last Reset</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for account in accounts %}
+                                    <tr>
+                                        <td>{{ account.service_name }}</td>
+                                        <td>{{ account.email }}</td>
+                                        <td>
+                                            {% if account.password_compromised %}
+                                                <span class="badge bg-danger">At Risk</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Secure</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if account.last_password_reset %}
+                                                {{ account.last_password_reset.strftime('%Y-%m-%d') }}
+                                            {% else %}
+                                                Never
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('reset_password', account_id=account.id) }}" class="btn btn-sm btn-outline-primary">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.8273 3 17.35 4.30093 19 6.34267" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                                    <path d="M22 5L16 3L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-3 text-secondary">
+                            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                            <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <p class="mt-3">No accounts found yet. Click "Scan Accounts" to discover your accounts.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Additional dashboard interactivity could be added here
+    console.log('Dashboard loaded');
+});
+</script>
+{% endblock %}

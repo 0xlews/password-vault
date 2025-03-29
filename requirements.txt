@@ -1,0 +1,15 @@
+flask==2.3.3
+werkzeug==2.3.7
+requests==2.28.2
+pwnedpasswords==2.0.0
+sqlalchemy==2.0.8
+flask-sqlalchemy==3.0.3
+flask-login==0.6.2
+python-dotenv==1.0.0
+cryptography==40.0.1
+# Additional packages for account discovery
+holehe==1.61
+pyhunter==1.7
+clearbit==0.1.7
+fullcontact.py==0.0.16
+ratelimit==2.2.1

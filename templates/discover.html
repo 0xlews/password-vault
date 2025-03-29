@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+
+{% block title %}Account Discovery - Vault{% endblock %}
+
+{% block extra_css %}
+<style>
+    .discovery-progress {
+        height: 6px;
+        border-radius: 3px;
+        margin-bottom: 1rem;
+        background-color: var(--background-secondary);
+    }
+    
+    .service-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--background-secondary);
+        color: var(--accent-primary);
+        font-size: 16px;
+        font-weight: bold;
+    }
+    
+    .category-badge {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 20px;
+        background-color: var(--background-secondary);
+        color: var(--text-secondary);
+    }
+    
+    .discovery-section {
+        transition: all 0.3s ease;
+    }
+    
+    .service-card {
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .discovery-item {
+        animation: fadeIn 0.6s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .category-section {
+        background-color: var(--card-bg);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+    }
+    
+    .status-pill {
+        border-radius: 50px;
+        padding: 0.2rem 0.75rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="mb-0">Account Discovery</h1>
+        <p class="text-muted">Find accounts associated with your email address</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-1">
+                <path d="M19 12H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Start Discovery</h5>
+                <p class="text-secondary mb-4">We'll scan for online accounts associated with your email address.</p>
+                
+                <form id="discovery-form" method="POST">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
+                        <small class="form-text text-secondary">We'll scan for accounts using this email</small>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" id="scan-button" class="btn btn-primary w-100">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-1">
+                                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                                <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Start Account Discovery
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">How It Works</h5>
+                
+                <div class="d-flex align-items-start mb-3">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3 text-primary">1</div>
+                    <div>
+                        <h6>Email Analysis</h6>
+                        <p class="text-secondary small mb-0">We analyze your email address to identify common services you might use</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-start mb-3">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3 text-primary">2</div>
+                    <div>
+                        <h6>Service Check</h6>
+                        <p class="text-secondary small mb-0">We check for accounts on popular websites and services</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-start">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3 text-primary">3</div>
+                    <div>
+                        <h6>Security Assessment</h6>
+                        <p class="text-secondary small mb-0">We evaluate if any accounts may have security concerns</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <div id="discovery-container">
+            {% if accounts_by_category %}
+                <div class="discovery-complete">
+                    <div class="alert alert-success mb-4">
+                        <div class="d-flex">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-3 flex-shrink-0">
+                                <path d="M22 11.0857V12.0057C21.9988 14.1621 21.3005 16.2604 20.0093 17.9875C18.7182 19.7147 16.9033 20.9782 14.8354 21.5896C12.7674 22.201 10.5573 22.1276 8.53447 21.3803C6.51168 20.633 4.78465 19.2518 3.61096 17.4428C2.43727 15.6338 1.87979 13.4938 2.02168 11.342C2.16356 9.19029 2.99721 7.14205 4.39828 5.5028C5.79935 3.86354 7.69279 2.72111 9.79619 2.24587C11.8996 1.77063 14.1003 1.98806 16.07 2.86572" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M22 4L12 14.01L9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <div>
+                                <h5 class="alert-heading mb-1">Discovery Completed!</h5>
+                                <p class="mb-0">We found {{ total_accounts }} accounts associated with your email.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-sm-6 col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h1 class="display-4 fw-bold text-primary mb-0">{{ total_accounts }}</h1>
+                                    <p class="text-secondary">Total Accounts</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h1 class="display-4 fw-bold text-success mb-0">{{ stats.safe }}</h1>
+                                    <p class="text-secondary">Secure</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h1 class="display-4 fw-bold text-danger mb-0">{{ stats.compromised }}</h1>
+                                    <p class="text-secondary">At Risk</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% for category, accounts in accounts_by_category.items() %}
+                        <div class="category-section mb-4">
+                            <h5 class="mb-3">{{ category }} <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary ms-2">{{ accounts|length }}</span></h5>
+                            <div class="row">
+                                {% for account in accounts %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card service-card h-100 {% if account.password_compromised %}border-danger{% endif %}">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="service-icon me-2">
+                                                            {{ account.service_name[0] }}
+                                                        </div>
+                                                        <h6 class="mb-0">{{ account.service_name }}</h6>
+                                                    </div>
+                                                    <span class="status-pill {% if account.password_compromised %}bg-danger bg-opacity-10 text-danger{% else %}bg-success bg-opacity-10 text-success{% endif %}">
+                                                        {% if account.password_compromised %}At Risk{% else %}Secure{% endif %}
+                                                    </span>
+                                                </div>
+                                                <p class="text-secondary small mb-1">{{ account.email }}</p>
+                                                {% if account.username %}
+                                                    <p class="text-secondary small mb-2">Username: {{ account.username }}</p>
+                                                {% endif %}
+                                                
+                                                {% if account.date_discovered and (now - account.date_discovered).days <= 7 %}
+                                                    <span class="badge bg-primary bg-opacity-10 text-primary">
+                                                        Recently Discovered
+                                                    </span>
+                                                {% endif %}
+                                                
+                                                {% if account.password_compromised %}
+                                                    <div class="mt-3">
+                                                        <a href="{{ url_for('reset_password', account_id=account.id) }}" class="btn btn-sm btn-danger">Reset Password</a>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    
+                    <div class="text-center my-4">
+                        <a href="{{ url_for('scan_accounts') }}" class="btn btn-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-1">
+                                <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.8273 3 17.35 4.30093 19 6.34267" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M22 5L16 3L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Scan Again
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-3 text-secondary">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.3" stroke-width="2"/>
+                            <path d="M12 7V12L15 15" stroke="currentColor" stroke-opacity="0.6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <h4>Ready to discover your accounts</h4>
+                        <p class="text-secondary mb-4">Start a scan to discover online accounts associated with your email address.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- This is the progress section that will be shown during scanning -->
+        <div id="discovery-progress" style="display: none;">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>Discovering Accounts...</h5>
+                    <p class="text-secondary" id="scan-status">Analyzing email patterns...</p>
+                    
+                    <div class="discovery-progress mt-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between small text-secondary">
+                        <span>Starting scan</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="discovered-services-container"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const discoveryForm = document.getElementById('discovery-form');
+    const scanButton = document.getElementById('scan-button');
+    const discoveryContainer = document.getElementById('discovery-container');
+    const discoveryProgress = document.getElementById('discovery-progress');
+    const progressBar = document.querySelector('.discovery-progress .progress-bar');
+    const scanStatus = document.getElementById('scan-status');
+    const discoveredServicesContainer = document.getElementById('discovered-services-container');
+    
+    if (discoveryForm) {
+        discoveryForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Hide the results and show the progress
+            discoveryContainer.style.display = 'none';
+            discoveryProgress.style.display = 'block';
+            
+            // Disable the button and change text
+            scanButton.disabled = true;
+            scanButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Scanning...';
+            
+            // Simulate progress (in a real app, this would be updated based on actual progress)
+            simulateDiscoveryProgress();
+            
+            // Submit the form after animation completes
+            setTimeout(function() {
+                window.location.href = "{{ url_for('discover_accounts') }}";
+            }, 5000);
+        });
+    }
+    
+    function simulateDiscoveryProgress() {
+        let progress = 0;
+        const statuses = [
+            "Analyzing email patterns...",
+            "Checking social media services...",
+            "Scanning productivity apps...",
+            "Looking for shopping accounts...",
+            "Checking streaming services...",
+            "Inspecting finance applications...",
+            "Completing account discovery..."
+        ];
+        
+        const interval = setInterval(function() {
+            progress += 5;
+            
+            if (progress <= 100) {
+                progressBar.style.width = progress + '%';
+                
+                // Update status text at certain progress points
+                if (progress % 15 === 0) {
+                    const statusIndex = Math.floor(progress / 15);
+                    if (statusIndex < statuses.length) {
+                        scanStatus.textContent = statuses[statusIndex];
+                        
+                        // Add a discovered service for visual feedback
+                        if (statusIndex > 0) {
+                            addDiscoveredService(statusIndex);
+                        }
+                    }
+                }
+            } else {
+                clearInterval(interval);
+            }
+        }, 200);
+    }
+    
+    function addDiscoveredService(index) {
+        // Demo services with their categories for visual feedback
+        const services = [
+            { name: "Google", category: "Email/Productivity" },
+            { name: "Facebook", category: "Social Media" },
+            { name: "Netflix", category: "Entertainment" },
+            { name: "Amazon", category: "Shopping" },
+            { name: "PayPal", category: "Finance" }
+        ];
+        
+        // Make sure we don't exceed the array bounds
+        if (index - 1 < services.length) {
+            const service = services[index - 1];
+            
+            // Create a service card
+            const serviceCard = document.createElement('div');
+            serviceCard.className = 'card mb-3 discovery-item';
+            serviceCard.innerHTML = `
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="service-icon me-2">${service.name[0]}</div>
+                            <div>
+                                <h6 class="mb-0">${service.name}</h6>
+                                <span class="category-badge">${service.category}</span>
+                            </div>
+                        </div>
+                        <span class="status-pill bg-primary bg-opacity-10 text-primary">Discovered</span>
+                    </div>
+                </div>
+            `;
+            
+            // Add to the container
+            discoveredServicesContainer.prepend(serviceCard);
+        }
+    }
+});
+</script>
+{% endblock %}
